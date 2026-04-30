@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts loaded via <link> in layout.tsx ── */
+
+@layer base {
+  :root {
+    --navy:    #0B1C3E;
+    --gold:    #C9A84C;
+    --ivory:   #FAF8F3;
+    --charcoal:#1E293B;
+    --slate:   #64748B;
+  }
+
+  * {
+    @apply border-gray-200;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ivory text-charcoal font-sans;
+    min-height: 100dvh;
+  }
+
+  h1, h2, h3, h4, h5 {
+    @apply font-serif tracking-tight;
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    @apply outline-none ring-2 ring-gold ring-offset-2;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar          { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track    { background: transparent; }
+  ::-webkit-scrollbar-thumb    { @apply bg-slate/30 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate/50; }
+}
+
+@layer components {
+  /* Gold gradient button */
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2
+           bg-gold text-white font-semibold
+           px-5 py-2.5 rounded-xl
+           shadow-navy
+           transition-all duration-200
+           hover:bg-gold-dark hover:shadow-lg
+           active:scale-[.98]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+
+  /* Navy outline button */
+  .btn-navy {
+    @apply inline-flex items-center justify-center gap-2
+           border-2 border-navy text-navy font-semibold
+           px-5 py-2.5 rounded-xl
+           transition-all duration-200
+           hover:bg-navy hover:text-white
+           active:scale-[.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           text-slate font-medium px-4 py-2 rounded-lg
+           transition-colors duration-150
+           hover:bg-navy/5 hover:text-navy
+           active:bg-navy/10;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-gray-100 p-6;
+  }
+
+  /* Input */
+  .input {
+    @apply w-full rounded-xl border border-gray-200 bg-white
+           px-4 py-2.5 text-sm text-charcoal placeholder-slate/60
+           transition-all duration-150
+           focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold
+           disabled:bg-gray-50 disabled:cursor-not-allowed;
+  }
+
+  /* Label */
+  .label {
+    @apply block text-sm font-medium text-charcoal mb-1.5;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5
+           text-xs font-semibold rounded-full;
+  }
+
+  /* Sidebar link */
+  .nav-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl
+           text-sm font-medium text-ivory/70
+           transition-all duration-150
+           hover:text-ivory hover:bg-white/10;
+  }
+  .nav-link.active {
+    @apply text-gold bg-white/10;
+  }
+}
+
+/* ── Page transition ── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: pageIn 0.25s ease-out both;
+}

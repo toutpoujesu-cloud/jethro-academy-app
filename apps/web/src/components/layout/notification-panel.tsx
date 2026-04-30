@@ -1,0 +1,146 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api-client';
+import { useUIStore } from '@/store/ui.store';
+import { formatDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
+
+interface Notification {
+  id:        string;
+  type:      string;
+  title:     string;
+  body:      string;
+  isRead:    boolean;
+  createdAt: string;
+}
+
+interface PaginatedNotifications {
+  items: Notification[];
+  total: number;
+  unread: number;
+}
+
+const TYPE_ICON: Record<string, string> = {
+  LESSON_APPROVED:       '✅',
+  REVISION_REQUESTED:    '✏️',
+  LESSON_SUBMITTED:      '📤',
+  COURSE_COMPLETED:      '🎓',
+  CERTIFICATE_ISSUED:    '🏅',
+  ASSIGNMENT_GRADED:     '📝',
+  PAYMENT_CONFIRMED:     '💳',
+  GENERAL:               '🔔',
+};
+
+interface NotificationPanelProps {
+  onClose: () => void;
+}
+
+export function NotificationPanel({ onClose }: NotificationPanelProps) {
+  const panelRef   = useRef<HTMLDivElement>(null);
+  const qc         = useQueryClient();
+  const setUnread  = useUIStore((s) => s.setUnreadCount);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose]);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['notifications'],
+    queryFn:  () => api.get<PaginatedNotifications>('/notifications?limit=20'),
+    onSuccess: (d) => setUnread(d.unread),
+  });
+
+  const markAll = useMutation({
+    mutationFn: () => api.patch('/notifications/mark-all-read'),
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] });
+      setUnread(0);
+    },
+  });
+
+  const markOne = useMutation({
+    mutationFn: (id: string) => api.patch(`/notifications/${id}/read`),
+    onSuccess:  () => qc.invalidateQueries({ queryKey: ['notifications'] }),
+  });
+
+  return (
+    <div
+      ref={panelRef}
+      className={cn(
+        'absolute right-0 top-full mt-2 w-80 sm:w-96',
+        'bg-white rounded-2xl shadow-modal border border-gray-100',
+        'animate-slide-down overflow-hidden z-50',
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <h3 className="font-semibold text-sm text-charcoal">Notifications</h3>
+        {(data?.unread ?? 0) > 0 && (
+          <button
+            onClick={() => markAll.mutate()}
+            className="text-xs text-gold hover:text-gold-dark transition-colors"
+            disabled={markAll.isPending}
+          >
+            Mark all read
+          </button>
+        )}
+      </div>
+
+      {/* List */}
+      <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <Spinner />
+          </div>
+        ) : !data?.items.length ? (
+          <div className="py-10 text-center text-sm text-slate">
+            No notifications yet
+          </div>
+        ) : (
+          data.items.map((n) => (
+            <button
+              key={n.id}
+              onClick={() => markOne.mutate(n.id)}
+              className={cn(
+                'w-full text-left px-4 py-3 flex gap-3 transition-colors hover:bg-ivory',
+                !n.isRead && 'bg-gold/5',
+              )}
+            >
+              <span className="text-xl shrink-0 mt-0.5">
+                {TYPE_ICON[n.type] ?? TYPE_ICON.GENERAL}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-charcoal leading-snug">{n.title}</p>
+                <p className="text-xs text-slate mt-0.5 line-clamp-2">{n.body}</p>
+                <p className="text-[10px] text-slate/60 mt-1">{formatDate(n.createdAt)}</p>
+              </div>
+              {!n.isRead && (
+                <span className="h-2 w-2 rounded-full bg-gold shrink-0 mt-1.5" />
+              )}
+            </button>
+          ))
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 py-2 border-t border-gray-100 text-center">
+        <button
+          onClick={onClose}
+          className="text-xs text-slate hover:text-charcoal transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
