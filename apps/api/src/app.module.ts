@@ -13,6 +13,10 @@ import { configValidationSchema } from './config/config.validation';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ExpertiseAreasModule } from './expertise-areas/expertise-areas.module';
+import { CoursesModule } from './courses/courses.module';
+import { ModulesModule } from './modules/modules.module';
+import { LessonsModule } from './lessons/lessons.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -39,7 +43,12 @@ import { RolesGuard } from './auth/guards/roles.guard';
     // ── Feature modules ──────────────────────────
     AuthModule,
     UsersModule,
-    // CoursesModule, ModulesModule,
+    ExpertiseAreasModule,
+    CoursesModule,
+    ModulesModule,
+    LessonsModule,
+    // ReviewModule, UploadsModule, ProgressModule, PaymentsModule,
+    // CertificatesModule, NotificationsModule, ReportsModule
     // LessonsModule, ProgressModule, PaymentsModule,
     // CertificatesModule, NotificationsModule, ReportsModule
   ],
