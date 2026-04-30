@@ -17,6 +17,13 @@ import { ExpertiseAreasModule } from './expertise-areas/expertise-areas.module';
 import { CoursesModule } from './courses/courses.module';
 import { ModulesModule } from './modules/modules.module';
 import { LessonsModule } from './lessons/lessons.module';
+import { ReviewModule } from './review/review.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { ProgressModule } from './progress/progress.module';
+import { PaymentsModule } from './payments/payments.module';
+import { CertificatesModule } from './certificates/certificates.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ReportsModule } from './reports/reports.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -47,10 +54,13 @@ import { RolesGuard } from './auth/guards/roles.guard';
     CoursesModule,
     ModulesModule,
     LessonsModule,
-    // ReviewModule, UploadsModule, ProgressModule, PaymentsModule,
-    // CertificatesModule, NotificationsModule, ReportsModule
-    // LessonsModule, ProgressModule, PaymentsModule,
-    // CertificatesModule, NotificationsModule, ReportsModule
+    ReviewModule,
+    UploadsModule,
+    ProgressModule,
+    PaymentsModule,
+    CertificatesModule,
+    NotificationsModule,
+    ReportsModule,
   ],
   providers: [
     // Global rate-limit guard
