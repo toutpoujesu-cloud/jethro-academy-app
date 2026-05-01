@@ -14,15 +14,25 @@ export const metadata: Metadata = {
   title:       { template: '%s | Jethro Academy', default: 'Jethro Academy' },
   description: 'Faith-based professional development platform',
   manifest:    '/manifest.json',
+  appleWebApp: {
+    capable:    true,
+    statusBarStyle: 'black-translucent',
+    title:      'Jethro Academy',
+  },
   icons: {
-    icon:  '/icons/icon-192.png',
+    icon:  [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
     apple: '/icons/apple-touch-icon.png',
+    shortcut: '/favicon.ico',
   },
   openGraph: {
     type:        'website',
     siteName:    'Jethro Academy',
     title:       'Jethro Academy',
     description: 'Faith-based professional development platform',
+    images:      [{ url: '/icons/icon-512.png', width: 512, height: 512 }],
   },
 };
 
