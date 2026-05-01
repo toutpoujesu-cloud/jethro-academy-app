@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -10,8 +10,8 @@ import { useAuthStore } from '@/store/auth.store';
 import { useDashboardRoute } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/store/ui.store';
-import type { Metadata } from 'next';
 
 const schema = z.object({
   email:    z.string().email('Enter a valid email'),
@@ -19,7 +19,8 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-export default function LoginPage() {
+// Inner component reads useSearchParams — must be inside <Suspense>
+function LoginForm() {
   const router         = useRouter();
   const searchParams   = useSearchParams();
   const next           = searchParams.get('next') ?? '';
@@ -34,7 +35,6 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  // Already logged in
   useEffect(() => {
     if (user) router.replace(next || dashboardRoute);
   }, [user, router, next, dashboardRoute]);
@@ -96,21 +96,12 @@ export default function LoginPage() {
         />
 
         <div className="flex items-center justify-end">
-          <Link
-            href="/forgot-password"
-            className="text-xs text-gold hover:text-gold-dark transition-colors"
-          >
+          <Link href="/forgot-password" className="text-xs text-gold hover:text-gold-dark transition-colors">
             Forgot password?
           </Link>
         </div>
 
-        <Button
-          type="submit"
-          variant="gold"
-          size="lg"
-          loading={isSubmitting}
-          className="w-full"
-        >
+        <Button type="submit" variant="gold" size="lg" loading={isSubmitting} className="w-full">
           Sign In
         </Button>
       </form>
@@ -122,7 +113,6 @@ export default function LoginPage() {
         </Link>
       </p>
 
-      {/* Divider */}
       <div className="mt-8 pt-6 border-t border-gray-100 text-center">
         <p className="text-xs text-slate/60">
           By signing in, you agree to our{' '}
@@ -131,5 +121,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center py-12"><Spinner /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

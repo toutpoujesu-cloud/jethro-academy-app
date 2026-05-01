@@ -1,6 +1,8 @@
 'use client';
 import { QueryClient } from '@tanstack/react-query';
 
+export function getQueryClient() { return queryClient; }
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

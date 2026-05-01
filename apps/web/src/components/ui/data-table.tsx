@@ -24,7 +24,7 @@ interface DataTableProps<T> {
 
 type SortDir = 'asc' | 'desc';
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   data,
   loading,
@@ -47,8 +47,8 @@ export function DataTable<T extends Record<string, unknown>>({
 
   const sorted = sortKey
     ? [...data].sort((a, b) => {
-        const av = a[sortKey] as string | number;
-        const bv = b[sortKey] as string | number;
+        const av = (a as Record<string, unknown>)[sortKey] as string | number;
+        const bv = (b as Record<string, unknown>)[sortKey] as string | number;
         const cmp = av < bv ? -1 : av > bv ? 1 : 0;
         return sortDir === 'asc' ? cmp : -cmp;
       })
@@ -110,7 +110,7 @@ export function DataTable<T extends Record<string, unknown>>({
               >
                 {columns.map((col) => (
                   <td key={col.key} className={cn('px-4 py-3 text-charcoal', col.className)}>
-                    {col.render ? col.render(row) : String(row[col.key] ?? '')}
+                    {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
                   </td>
                 ))}
               </tr>

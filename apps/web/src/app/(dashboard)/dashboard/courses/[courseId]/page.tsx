@@ -63,7 +63,7 @@ export default function CourseDetailPage() {
   });
 
   const enroll = useMutation({
-    mutationFn: () => api.post(`/payments/checkout`, { courseId }),
+    mutationFn: () => api.post<{ url?: string }>(`/payments/checkout`, { courseId }),
     onSuccess:  (data: { url?: string }) => {
       if (data.url) window.location.href = data.url;
     },

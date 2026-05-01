@@ -85,8 +85,8 @@ export default function LessonEditorPage() {
   const save = useMutation({
     mutationFn: (data: FormValues) =>
       isNew
-        ? api.post('/lessons', data)
-        : api.patch(`/lessons/${lessonId}`, data),
+        ? api.post<{ id: string }>('/lessons', data)
+        : api.patch<{ id: string }>(`/lessons/${lessonId}`, data),
     onSuccess: (saved: { id: string }) => {
       toast.success(isNew ? 'Lesson created!' : 'Saved!');
       qc.invalidateQueries({ queryKey: ['studio-lessons'] });

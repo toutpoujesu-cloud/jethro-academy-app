@@ -12,15 +12,14 @@ interface Notification {
   id:        string;
   type:      string;
   title:     string;
-  body:      string;
+  message:   string;
   isRead:    boolean;
   createdAt: string;
 }
 
 interface PaginatedNotifications {
-  items: Notification[];
-  total: number;
-  unread: number;
+  data:  Notification[];
+  meta:  { total: number };
 }
 
 const TYPE_ICON: Record<string, string> = {
@@ -39,9 +38,9 @@ interface NotificationPanelProps {
 }
 
 export function NotificationPanel({ onClose }: NotificationPanelProps) {
-  const panelRef   = useRef<HTMLDivElement>(null);
-  const qc         = useQueryClient();
-  const setUnread  = useUIStore((s) => s.setUnreadCount);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const qc       = useQueryClient();
+  const setNotificationsOpen = useUIStore((s) => s.setNotificationsOpen);
 
   // Close on outside click
   useEffect(() => {
@@ -54,38 +53,50 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
     return () => document.removeEventListener('mousedown', handler);
   }, [onClose]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<PaginatedNotifications>({
     queryKey: ['notifications'],
     queryFn:  () => api.get<PaginatedNotifications>('/notifications?limit=20'),
-    onSuccess: (d) => setUnread(d.unread),
+  });
+
+  const { data: unreadData } = useQuery<{ count: number }>({
+    queryKey: ['notifications-unread'],
+    queryFn:  () => api.get<{ count: number }>('/notifications/unread-count'),
   });
 
   const markAll = useMutation({
-    mutationFn: () => api.patch('/notifications/mark-all-read'),
+    mutationFn: () => api.patch('/notifications/read-all'),
     onSuccess:  () => {
       qc.invalidateQueries({ queryKey: ['notifications'] });
-      setUnread(0);
+      qc.invalidateQueries({ queryKey: ['notifications-unread'] });
     },
   });
 
   const markOne = useMutation({
     mutationFn: (id: string) => api.patch(`/notifications/${id}/read`),
-    onSuccess:  () => qc.invalidateQueries({ queryKey: ['notifications'] }),
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] });
+      qc.invalidateQueries({ queryKey: ['notifications-unread'] });
+    },
   });
+
+  const unreadCount = unreadData?.count ?? 0;
+  const notifications = data?.data ?? [];
 
   return (
     <div
       ref={panelRef}
       className={cn(
         'absolute right-0 top-full mt-2 w-80 sm:w-96',
-        'bg-white rounded-2xl shadow-modal border border-gray-100',
-        'animate-slide-down overflow-hidden z-50',
+        'bg-white rounded-2xl shadow-lg border border-gray-100',
+        'overflow-hidden z-50',
       )}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-        <h3 className="font-semibold text-sm text-charcoal">Notifications</h3>
-        {(data?.unread ?? 0) > 0 && (
+        <h3 className="font-semibold text-sm text-charcoal">
+          Notifications {unreadCount > 0 && <span className="text-gold">({unreadCount})</span>}
+        </h3>
+        {unreadCount > 0 && (
           <button
             onClick={() => markAll.mutate()}
             className="text-xs text-gold hover:text-gold-dark transition-colors"
@@ -102,15 +113,15 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
           <div className="flex justify-center py-8">
             <Spinner />
           </div>
-        ) : !data?.items.length ? (
+        ) : !notifications.length ? (
           <div className="py-10 text-center text-sm text-slate">
             No notifications yet
           </div>
         ) : (
-          data.items.map((n) => (
+          notifications.map((n) => (
             <button
               key={n.id}
-              onClick={() => markOne.mutate(n.id)}
+              onClick={() => { if (!n.isRead) markOne.mutate(n.id); }}
               className={cn(
                 'w-full text-left px-4 py-3 flex gap-3 transition-colors hover:bg-ivory',
                 !n.isRead && 'bg-gold/5',
@@ -121,7 +132,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-charcoal leading-snug">{n.title}</p>
-                <p className="text-xs text-slate mt-0.5 line-clamp-2">{n.body}</p>
+                <p className="text-xs text-slate mt-0.5 line-clamp-2">{n.message}</p>
                 <p className="text-[10px] text-slate/60 mt-1">{formatDate(n.createdAt)}</p>
               </div>
               {!n.isRead && (
@@ -135,7 +146,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
       {/* Footer */}
       <div className="px-4 py-2 border-t border-gray-100 text-center">
         <button
-          onClick={onClose}
+          onClick={() => { onClose(); setNotificationsOpen(false); }}
           className="text-xs text-slate hover:text-charcoal transition-colors"
         >
           Close

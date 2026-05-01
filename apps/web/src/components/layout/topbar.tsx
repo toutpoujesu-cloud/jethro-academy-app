@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/auth.store';
-import { useUIStore } from '@/store/ui.store';
+import { api } from '@/lib/api-client';
 import { Avatar } from '@/components/ui/avatar';
 import { NotificationPanel } from './notification-panel';
 
@@ -14,8 +15,13 @@ interface TopBarProps {
 }
 
 export function TopBar({ title, onMenuToggle }: TopBarProps) {
-  const user            = useAuthStore((s) => s.user);
-  const unread          = useUIStore((s) => s.unreadCount);
+  const user   = useAuthStore((s) => s.user);
+  const { data: unreadData } = useQuery<{ count: number }>({
+    queryKey: ['notifications-unread'],
+    queryFn:  () => api.get<{ count: number }>('/notifications/unread-count'),
+    refetchInterval: 60_000, // poll every minute
+  });
+  const unread = unreadData?.count ?? 0;
   const [notifOpen, setNotifOpen] = useState(false);
 
   return (

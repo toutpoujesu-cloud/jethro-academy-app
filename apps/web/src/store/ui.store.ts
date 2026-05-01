@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 
-interface Toast {
-  id:      string;
-  type:    'success' | 'error' | 'warning' | 'info';
-  message: string;
+export interface Toast {
+  id:        string;
+  type:      'success' | 'error' | 'warning' | 'info';
+  title?:    string;
+  message:   string;
+  duration?: number;
 }
 
 interface UiState {
@@ -36,6 +38,9 @@ export const useUiStore = create<UiState>()((set) => ({
   },
   removeToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }));
+
+// Alias for components that import the capitalised name
+export const useUIStore = useUiStore;
 
 export const toast = {
   success: (message: string) => useUiStore.getState().addToast('success', message),

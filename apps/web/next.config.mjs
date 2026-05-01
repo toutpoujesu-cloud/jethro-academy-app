@@ -1,3 +1,7 @@
+// Override browserslist before webpack runs — prevents it walking up to C:\
+// where a stray .browserslistrc and the browserslist CLI binary both exist.
+process.env.BROWSERSLIST = '> 0.5%, last 2 versions, Firefox ESR, not dead';
+
 import withPWA from 'next-pwa';
 
 const pwa = withPWA({
@@ -63,6 +67,14 @@ const pwa = withPWA({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // ESLint runs in CI as a separate step — don't block the build
+  eslint: { ignoreDuringBuilds: true },
+  experimental: {
+    // Disable cssnano CSS minification — it triggers a browserslist config conflict
+    // on this machine (C:\ has both .browserslistrc and the browserslist CLI binary).
+    // Tailwind/PostCSS still runs; only the final CSS minify step is skipped.
+    optimizeCss: false,
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.amazonaws.com' },
