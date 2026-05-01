@@ -34,7 +34,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
       isGlobal: true,
       load: [appConfig, databaseConfig, jwtConfig, stripeConfig, s3Config, vimeoConfig, emailConfig],
       validationSchema: configValidationSchema,
-      validationOptions: { abortEarly: true },
+      validationOptions: { abortEarly: true, allowUnknown: true },
     }),
 
     // ── Rate limiting ────────────────────────────

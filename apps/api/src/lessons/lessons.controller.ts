@@ -29,7 +29,7 @@ import { Public } from '../common/decorators/public.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 
 class AssignInstructorDto {
-  @ApiProperty({ description: 'UUID of the instructor to assign', format: 'uuid' })
+  @ApiProperty({ description: 'UUID of the instructor to assign' })
   @IsUUID()
   instructorId: string;
 }
@@ -41,7 +41,7 @@ export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new lesson within a module (Admin+)' })
   @ApiResponse({ status: 201, description: 'Lesson created successfully.' })
   @ApiResponse({ status: 404, description: 'Module not found.' })
@@ -55,15 +55,14 @@ export class LessonsController {
   @ApiOperation({ summary: 'Get all lessons for a module (Public)' })
   @ApiQuery({
     name: 'moduleId',
-    required: true,
+    required: false,
     type: String,
-    format: 'uuid',
     description: 'UUID of the parent module',
   })
   @ApiResponse({ status: 200, description: 'Ordered list of lessons for the module.' })
   @ApiResponse({ status: 404, description: 'Module not found.' })
-  findByModule(@Query('moduleId', ParseUUIDPipe) moduleId: string) {
-    return this.lessonsService.findByModule(moduleId);
+  findByModule(@Query('moduleId') moduleId?: string) {
+    return this.lessonsService.findByModule(moduleId ?? '');
   }
 
   @Get(':id')
@@ -79,7 +78,7 @@ export class LessonsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN, UserRole.INSTRUCTOR)
   @ApiOperation({
     summary: 'Update a lesson (Admin+ or assigned instructor)',
   })
@@ -96,7 +95,7 @@ export class LessonsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a lesson (Admin+)' })
   @ApiResponse({ status: 200, description: 'Lesson deleted successfully.' })
   @ApiResponse({ status: 404, description: 'Lesson not found.' })
@@ -105,7 +104,7 @@ export class LessonsController {
   }
 
   @Patch(':id/assign-instructor')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Assign an instructor to a lesson (Admin+)' })
   @ApiBody({ type: AssignInstructorDto })
   @ApiResponse({ status: 200, description: 'Instructor assigned successfully.' })

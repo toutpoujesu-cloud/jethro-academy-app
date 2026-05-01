@@ -187,7 +187,7 @@ export class PaymentsService {
     courseId:    string,
     source:      EnrollmentSource,
     grantedById?: string,
-    couponId?:   string,
+    _couponId?:  string,
   ) {
     return this.prisma.enrollment.create({
       data: { userId, courseId, source, grantedById: grantedById ?? null },

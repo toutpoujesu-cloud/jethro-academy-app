@@ -30,7 +30,7 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new course (Admin+)' })
   @ApiResponse({ status: 201, description: 'Course created successfully.' })
   @ApiResponse({ status: 409, description: 'Slug conflict.' })
@@ -41,7 +41,7 @@ export class CoursesController {
   @Get()
   @Public()
   @ApiOperation({ summary: 'List all courses with optional filters (Public)' })
-  @ApiQuery({ name: 'expertiseAreaId', required: false, type: String, format: 'uuid' })
+  @ApiQuery({ name: 'expertiseAreaId', required: false, type: String })
   @ApiQuery({ name: 'status', required: false, enum: ContentStatus })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -65,7 +65,7 @@ export class CoursesController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update a course (Admin+)' })
   @ApiResponse({ status: 200, description: 'Course updated successfully.' })
   @ApiResponse({ status: 404, description: 'Course not found.' })

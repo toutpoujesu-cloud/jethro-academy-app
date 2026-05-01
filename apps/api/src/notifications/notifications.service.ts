@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { NotificationType } from '@prisma/client';
+import { Prisma, NotificationType } from '@prisma/client';
 import { IJwtPayload } from '@jethro/shared';
 import { PrismaService } from '../prisma/prisma.service';
 import { parsePagination, buildMeta } from '../common/utils/pagination.util';
@@ -18,7 +18,15 @@ export class NotificationsService {
     message: string;
     data?:   Record<string, unknown>;
   }) {
-    const notification = await this.prisma.notification.create({ data: params });
+    const notification = await this.prisma.notification.create({
+      data: {
+        userId:  params.userId,
+        type:    params.type,
+        title:   params.title,
+        message: params.message,
+        ...(params.data !== undefined && { data: params.data as Prisma.InputJsonValue }),
+      },
+    });
     this.logger.debug(`Notification created: ${params.type} → user=${params.userId}`);
     return notification;
   }

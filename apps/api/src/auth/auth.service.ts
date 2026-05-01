@@ -122,7 +122,7 @@ export class AuthService {
     });
 
     return {
-      user,
+      user: user as unknown as IAuthResponse['user'],
       tokens: {
         accessToken,
         refreshToken: refreshToken.token,
@@ -132,7 +132,7 @@ export class AuthService {
   }
 
   private generateAccessToken(userId: string, email: string, role: UserRole): Promise<string> {
-    const payload: IJwtPayload = { sub: userId, email, role };
+    const payload: IJwtPayload = { sub: userId, email, role: role as unknown as IJwtPayload['role'] };
     return this.jwtService.signAsync(payload, {
       secret:    this.configService.getOrThrow<string>('jwt.secret'),
       expiresIn: this.configService.get<string>('jwt.expiresIn', '15m'),

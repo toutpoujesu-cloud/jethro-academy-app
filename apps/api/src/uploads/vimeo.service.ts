@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-interface VimeoUploadResponse {
+export interface VimeoUploadResponse {
   uri:        string;   // e.g. /videos/123456789
   videoId:    string;
   embedUrl:   string;
@@ -14,7 +14,7 @@ export class VimeoService {
   private readonly accessToken: string;
   private readonly apiBase = 'https://api.vimeo.com';
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(configService: ConfigService) {
     this.accessToken = configService.getOrThrow<string>('vimeo.accessToken');
   }
 

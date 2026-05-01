@@ -90,7 +90,7 @@ export class LessonsService {
     }
 
     const isAdmin =
-      requester.role === UserRole.ADMIN ||
+      requester.role === UserRole.CONTENT_ADMIN ||
       requester.role === UserRole.SUPER_ADMIN;
     const isOwnLesson = lesson.instructorId === requester.sub;
 

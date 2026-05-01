@@ -8,7 +8,7 @@ export class UpdateLessonDto extends PartialType(CreateLessonDto) {
   @ApiPropertyOptional({
     description: 'Publication status of the lesson',
     enum: ContentStatus,
-    example: ContentStatus.PUBLISHED,
+    example: ContentStatus.APPROVED,
   })
   @IsOptional()
   @IsEnum(ContentStatus)

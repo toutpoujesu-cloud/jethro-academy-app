@@ -4,7 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { LessonProgressStatus, UserRole } from '@prisma/client';
+import { Prisma, LessonProgressStatus, UserRole } from '@prisma/client';
 import { IJwtPayload } from '@jethro/shared';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProgressDto, GradeAssignmentDto } from './dto/update-progress.dto';
@@ -161,7 +161,7 @@ export class ProgressService {
       ...(videoWatched         !== undefined && { videoWatched }),
       ...(dto.quizSubmitted    !== undefined && { quizSubmitted: dto.quizSubmitted }),
       ...(dto.quizScore        !== undefined && { quizScore: dto.quizScore }),
-      ...(dto.quizAnswers      !== undefined && { quizAnswers: dto.quizAnswers }),
+      ...(dto.quizAnswers      !== undefined && { quizAnswers: dto.quizAnswers as Prisma.InputJsonValue }),
       ...(dto.assignmentSubmitted !== undefined && { assignmentSubmitted: dto.assignmentSubmitted }),
       ...(dto.assignmentText   !== undefined && { assignmentText: dto.assignmentText }),
       ...(dto.assignmentLinkUrl !== undefined && { assignmentLinkUrl: dto.assignmentLinkUrl }),

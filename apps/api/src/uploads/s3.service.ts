@@ -25,7 +25,7 @@ export class S3Service {
   private readonly bucket: string;
   private readonly presignedExpires: number;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(configService: ConfigService) {
     this.bucket = configService.getOrThrow<string>('s3.bucket');
     this.presignedExpires = configService.get<number>('s3.presignedUrlExpires', 3600);
 

@@ -96,7 +96,7 @@ async function main() {
     },
   });
 
-  const governanceArea = await prisma.expertiseArea.upsert({
+  await prisma.expertiseArea.upsert({
     where: { slug: 'church-governance' },
     update: {},
     create: {
@@ -107,7 +107,7 @@ async function main() {
     },
   });
 
-  const pastoralArea = await prisma.expertiseArea.upsert({
+  await prisma.expertiseArea.upsert({
     where: { slug: 'pastoral-care' },
     update: {},
     create: {

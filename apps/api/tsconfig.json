@@ -3,11 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "./",
-    "paths": {
-      "@jethro/shared": ["../../packages/shared/src"]
-    }
+    "strictPropertyInitialization": false
   },
-  "include": ["src/**/*", "prisma/seed.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]
 }

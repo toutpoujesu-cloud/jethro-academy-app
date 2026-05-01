@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ContentStatus, UserRole } from '@prisma/client';
+import { ContentStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { generateSlug } from '../common/utils/slug.util';
 import { buildMeta, parsePagination } from '../common/utils/pagination.util';
@@ -77,7 +77,7 @@ export class CoursesService {
 
     return {
       items,
-      meta: buildMeta({ total, skip, take, page: params.page, limit: params.limit }),
+      meta: buildMeta(total, params.page ?? 1, params.limit ?? 10),
     };
   }
 

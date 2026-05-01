@@ -30,7 +30,7 @@ export class ModulesController {
   constructor(private readonly modulesService: ModulesService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new module within a course (Admin+)' })
   @ApiResponse({ status: 201, description: 'Module created successfully.' })
   @ApiResponse({ status: 404, description: 'Course not found.' })
@@ -43,15 +43,14 @@ export class ModulesController {
   @ApiOperation({ summary: 'Get all modules for a course (Public)' })
   @ApiQuery({
     name: 'courseId',
-    required: true,
+    required: false,
     type: String,
-    format: 'uuid',
     description: 'UUID of the parent course',
   })
   @ApiResponse({ status: 200, description: 'List of modules with their lessons.' })
   @ApiResponse({ status: 404, description: 'Course not found.' })
-  findByCourse(@Query('courseId', ParseUUIDPipe) courseId: string) {
-    return this.modulesService.findByCourse(courseId);
+  findByCourse(@Query('courseId') courseId?: string) {
+    return this.modulesService.findByCourse(courseId ?? '');
   }
 
   @Get(':id')
@@ -64,7 +63,7 @@ export class ModulesController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update a module (Admin+)' })
   @ApiResponse({ status: 200, description: 'Module updated successfully.' })
   @ApiResponse({ status: 404, description: 'Module not found.' })
@@ -76,7 +75,7 @@ export class ModulesController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CONTENT_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a module (Admin+)' })
   @ApiResponse({ status: 200, description: 'Module deleted successfully.' })
   @ApiResponse({ status: 404, description: 'Module not found.' })
